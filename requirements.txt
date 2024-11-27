@@ -1,0 +1,7 @@
+Flask==2.2.5
+Werkzeug==2.3.6
+pdfminer.six==20221105
+docx2txt==0.8
+stqdm==0.0.4
+
+openai==0.27.10
