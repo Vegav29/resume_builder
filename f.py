@@ -23,7 +23,7 @@ API_KEY = "AIzaSyA108KteaxonmokJeSgjwmBSCr56k4qd5I"
 personal_details_prompt = PromptTemplate(
     input_variables=["content", "job_description"],
     template=""" 
-    You are a professional resume builder. Based on the extracted text below, format the applicant's personal details professionally for a resume and provide the output in JSON format.
+    You are a professional resume builder. Based on the extracted text below, format the applicant's personal details professionally for a resume and provide the output in JSON format.If a field is null, empty, or invalid, remove it entirely from the JSON output. Do not leave placeholders or null values.
 
     Extracted Content:
     {content}
@@ -51,7 +51,7 @@ personal_details_prompt = PromptTemplate(
 
 skills_prompt = PromptTemplate(
     input_variables=["content", "job_description"],
-    template="""You are a professional resume builder specializing in optimizing resumes based on job description. Your task is to generate a JSON-formatted skills sections should include all the skills on resume and add skills tailored to a specific job description, bluff aligns closely with the job description and resume and does not overstate the applicant's qualifications..
+    template="""You are a professional resume builder specializing in optimizing resumes based on job description. Your task is to generate a JSON-formatted skills sections should include all the skills on resume and add skills tailored to a specific job description, bluff skills aligns closely with the job description and resume and does not overstate the applicant's qualifications.
 
 ### Instructions
 
@@ -63,9 +63,6 @@ skills_prompt = PromptTemplate(
 2. **Optimization Guidelines**:
     - Match keywords and phrases in the job description to make the resume ATS-friendly.
     - Focus on the most relevant skills, frameworks, and tools that align with the job description.
-    - Each sectioin in skills should haave mininmum 3 skills
-    - Limit the total number of combined skills across all categories to **10-20**.
-    - Ensure each line in the JSON output has a maximum of **120 characters**, including spaces, for readability.
     - If the applicant lacks certain skills explicitly mentioned in the job description, infer and include **related or transferable skills** based on their existing experience. These should be plausible and supportable during an interview.
 
 3. **Prioritization Rules**:
@@ -103,8 +100,7 @@ skills_prompt = PromptTemplate(
 
 experience_prompt = PromptTemplate(
     input_variables=["content", "job_description"],
-    template="""You are a professional resume builder specializing in optimizing resumes based on  job applications. Your task is to generate a JSON-formatted experience  tailored to a specific job description.i need each job in this format 1.Tackled [problem/situation],2. took charge of [responsibilities/role],3. utilized [tools/technologies] to [actions], and 4.achieved [measurable outcomes],don't add any hallucinated experience 
-        
+    template="""You are a professional resume builder specializing in optimizing resumes based on  job applications.i need all jobs stated in experience in resume,  Your task is to generate a JSON-formatted experience  tailored to a specific job description.i need each job in this format 1.Tackled [problem/situation],2. took charge of [responsibilities/role],3. utilized [tools/technologies] to [actions], and 4.result [measurable outcomes like increased customer satisfaction by 40%]
 2. **Key Guidelines**:
 resume content:
 {content}
@@ -119,14 +115,14 @@ Job Description:
     - Match the keywords in the job description to enhance ATS compatibility.
     - Use concise, professional language.
     - Focus on actionable outcomes, metrics, and results where possible.
-    - Ensure each line in the JSON output has a maximum of **110 characters**, including spaces
+    - Ensure each line in the JSON output.
 3. **Formatting Rules**:
     - Each job entry should include:
         - **Job Title**: Clearly state the position.
         - **Company**: Provide the organization name.
         - **Start Date** and **End Date**: Use the format `MM/YYYY`.
         - **Location**: Mention the city and country (if available).
-        - **Description**: Include 4 bullet points per job, each limited to 130 characters.
+        - **Description**: Include 4 bullet points per job
     - Each bullet point must:
         - Start with a strong action verb (e.g., **Led**, **Improved**, **Implemented**, **Optimized**).
         - Highlight measurable results (e.g., **Increased efficiency by 20%**, **Reduced costs by 15%**).
@@ -138,7 +134,7 @@ Generate output in the following format:
 **Job Title**: [Title of the Job]  
    **Company**: [Name of the Company]  
    **Location**: [City, Country]  
-   **Dates**: [Start Date – End Date] (MM/YYYY format)  
+   **Dates**: [Start Date – End Date] (Month in text/YYYY format)  
    **Description**:  
      - Briefly describe the situation or problem the role aimed to address.  
      - Outline the key responsibilities and your specific role in the job.  
@@ -150,9 +146,8 @@ Generate output in the following format:
 projects_prompt = PromptTemplate(
     input_variables=["content", "job_description"],
     template=""" 
-You are a professional resume builder specializing in optimizing resumes for job applications. Your task is to generate a JSON-formatted projects tailored to a specific job description.use 4 bullet points per job,each bulllet Start with a strong action verb,Adjust the project descriptions to **focus on the aspects most relevant to the job you’re applying for andAssign a relevance score to each project on a scale of 1 to 10, based on how well the project's skills, technologies, and outcomes align with the job description.
-   - Sort projects by their relevance scores in descending order.
-   - Select the top-rated projects, ensuring the total number does not exceed 3 
+You are a professional resume builder specializing in optimizing resumes for job applications. Your task is to generate a JSON-formatted projects tailored to a specific job description.use 4 bullet points per job,each bulllet Start with a strong action verb,Adjust the project descriptions based on job description bluff skills aligns closely with the job description based on resume and does not overstate the applicant's qualifications. 1.Tackled [problem/situation],2. took charge of [responsibilities/role],3. utilized [tools/technologies] to [actions], and 4.result of project includes meaurable outcomes like e.g., [*Increased efficiency by 20%,leading to a 15% boost in client satisfaction ratings,optimize workflow processes and increase productivity by 30%]
+
 
 {content}
 
@@ -186,27 +181,21 @@ Job Description:
     - Each project should include the **title** and **description**.
     - The description must have exactly  4 bullet points, written concisely
     - Focus on the specific contributions, tools used, and measurable results.
-    - Ensure each line in the JSON output has a maximum of **120 characters** including spaces
-6. **add new projects**
+6. **add ** only one**  new projects based on job description**
     -If none of the existing projects match the job description, create a new project that aligns with the role.
 6. **Output Format**:
 Generate output in the structured format given below. Do not treat "title" or "description" as input keys or fields. Follow the format exactly as shown.
 7. Include *only the 3 projects which match with  job description* entry listed in the resume
 ### Required Format:
 Projects:
-1. Title: Project Title 1
+1. Title: Project 
+    Dates: [Start Date – End Date] (Month in text/YYYY format) 
    Description:
      - Briefly describe the problem the project aimed to solve.
      - Outline the responsibilities and your specific role in the project.
      -  Detail key actions with technologies/tools used to address the problem.
      -  Highlight measurable results or impact achieved .
 
-2. Title: Project Title 2
-   Description:
-     -  Briefly describe the problem the project aimed to solve.
-     - Outline the responsibilities and your specific role in the project.
-     -  Detail key actions with technologies/tools used to address the problem.
-     -  Highlight measasurable results or impact achieved
 """
 )
 
@@ -216,7 +205,8 @@ education_prompt = PromptTemplate(
   
 
 ```plaintext
-You are a professional resume builder specializing in optimizing resumes for job applications. Your task is to generate a JSON-formatted slsection tailored to a specific job description.
+You are a professional resume builder specializing in optimizing resumes for job applications. Your task is to generate a JSON-formatted  education section, Based on the extracted text below, format the applicant's education professionally for a resume and provide the output in JSON format.If a field is null, empty, or invalid, remove it entirely from the JSON output. Do not leave placeholders or null values.
+
 
 {content}
 
@@ -241,7 +231,7 @@ Generate output in the following format:
    Description:
      - Area of Study: [Field of Study]
      - Study Type: [Degree Type]
-     - Dates: Start Date – End Date (MM/YYYY format)
+     - Dates: Start Date – End Date (Month in text/YYYY format)
      - Score: [GPA/Percentage]
      - Location: [City, Country]
 
@@ -252,12 +242,10 @@ Generate output in the following format:
 validation_prompts = {
     "Personal Details": PromptTemplate(
         input_variables=["generated_output", "resume_content", "job_description"],
-        template="""
+        template="""You are a strict validator and editor. Validate and correct the provided JSON based on the rules below without altering its structure, format, or indentation. Only update values as required. If a field is invalid, inconsistent, or missing, correct it.  Remove placeholders (e.g., "xxx", "yyy") or null/empty fields.  
         Response: {generated_output}
         Resume: {resume_content}
         Job Description: {job_description}
-Instruction:  
-You are a strict validator and editor. Validate and correct the provided JSON based on the rules below without altering its structure, format, or indentation. Only update values as required. If a field is invalid, inconsistent, or missing, correct it.  Remove placeholders (e.g., "xxx", "yyy") or null/empty fields.  
         response: {generated_output}
         Resume: {resume_content}
         Job Description: {job_description}
@@ -288,7 +276,7 @@ You are a strict validator and editor. Validate and correct the provided JSON ba
     ),
     "Skills": PromptTemplate(
         input_variables=["generated_output", "resume_content", "job_description"],
-        template="""You are a strict validator and editor. Validate and correct the provided JSON based on the rules below without altering its structure, format, or indentation. Only update values as required. If a field is invalid, inconsistent, or missing, correct it. and Remove placeholders (e.g., "xxx", "yyy") or null/empty fields.  
+        template="""You are a strict validator and editor. Validate and correct the provided JSON based on the rules below without altering its structure, format, or indentation. Only update values as required. If a field is invalid, inconsistent, or missing, correct it. and Remove placeholders (e.g., "xxx", "yyy") or null/empty fields,Validate the skills in the generated JSON against the skills listed in the resume content and job description, if the skills lacks match with job description,add skills also make sure no of skills in each section should be maximum 3 and total maximum no of skills should be 20
         response: {generated_output}
         Resume: {resume_content}
         Job Description: {job_description}
@@ -325,7 +313,8 @@ You are a strict validator and editor. Validate and correct the provided JSON ba
     ),
     "Experience": PromptTemplate(
         input_variables=["generated_output", "resume_content", "job_description"],
-        template="""You are a strict validator and editor. Validate and correct the provided JSON based on the rules below without altering its structure, format, or indentation. Only update values as required. If a field is invalid, inconsistent, or missing, correct it. If absent in the resume, remove it from the JSON entirely and Remove placeholders (e.g., "xxx", "yyy") or null/empty fields.  
+        template="""You are a strict validator and editor. Validate and correct the provided JSON based on the rules below without altering its structure, format, or indentation. Only update values as required. If a field is invalid, inconsistent, or missing, correct it. If absent in the resume, remove it from the JSON entirely and Remove placeholders (e.g., "xxx", "yyy") or null/empty fields and - (hypen) as well in each bullet points.Review and refine the following job descriptions to ensure they align closely with the job role while maintaining accuracy and consistency. Each description should include four concise bullet points structured as follows: (1) Tackled [problem/situation], (2) Took charge of [responsibilities/role], (3) Utilized [tools/technologies] to [actions], and (4) results should include measurable outcomes [*Increased efficiency by 20%,leading to a 15% boost in client satisfaction ratings,optimize workflow processes and increase productivity by 30%]
+. Ensure each point starts with a strong action verb and highlights relevant skills and accomplishments,escriptions to ensure they are clear, impactful, and align closely with the job posting requirements without overstating qualification,no of characters in each point should be 135-150 character including spaces ,Ensure the start and end dates are in **Month in year/YYYY** format,if dates are not specified or has placeholders remove it from json,dont add to be added or not specified
         Response: {generated_output}
         Resume: {resume_content}
         Job Description: {job_description}
@@ -365,7 +354,9 @@ You are a strict validator and editor. Validate and correct the provided JSON ba
     ),
     "Projects": PromptTemplate(
         input_variables=["generated_output", "resume_content", "job_description"],
-        template="""You are a strict validator and editor. Validate and correct the provided JSON based on the rules below without altering its structure, format, or indentation. Only update values as required. If a field is invalid, inconsistent, or missing, correct it. If absent in the resume, remove it from the JSON entirely.
+        template="""You are a strict validator and editor. Validate and correct the provided JSON based on the rules below without altering its structure, format, or indentation. Only update values as required. If a field is invalid, inconsistent, or missing, correct it. If absent in the resume, remove it from the JSON entirely.Review and refine the following job descriptions to ensure they align closely with the job role while maintaining accuracy and consistency. Each description should include four concise bullet points structured as follows: (1) Tackled [problem/situation], (2) Took charge of [responsibilities/role], (3) Utilized [tools/technologies] to [actions], and (4) result of project includes meaurable outcomes like e.g., [*Increased efficiency by 20%,]
+
+. Ensure each point starts with a strong action verb and highlights relevant skills and accomplishments,escriptions to ensure they are clear, impactful, and align closely with the job posting requirements without overstating qualification,each bullet point should be 120-130 charcters including spaces.remove -(hypen) in staring of each bullet points,Ensure the start and end dates are in **Month in year/YYYY** format,if its not specified or has placeholder remove the data from json,,dont add to be added or not specified
         response: {generated_output}
         Resume: {resume_content}
         Job Description: {job_description}
@@ -374,7 +365,7 @@ You are a strict validator and editor. Validate and correct the provided JSON ba
    - Evaluate the relevance of each project to the job description.
    - Assign a relevance score to each project on a scale of 1 to 10, based on how well the project's skills, technologies, and outcomes align with the job description.
    - Sort projects by their relevance scores in descending order.
-   - Select the top-rated projects, ensuring the total number does not exceed 3 
+   - Select the top-rated 3 projects,  
 1. **Cross-Check with Resume Content**:
     - Validate that each project entry in the `generated_projects_json` aligns with the project details provided in the `resume_content`.
     - Ensure that **project titles**, **tools**, **technologies**, and **descriptions** are accurate and match what is in the resume.
@@ -438,7 +429,7 @@ You are a strict validator and editor. Validate and correct the provided JSON ba
     - If applicable, highlight **honors, distinctions**, or **relevant certifications** that match the JD’s requirements.
 
 4. **Formatting**:
-    - Ensure the start and end dates are in **MM/YYYY** format.
+    - Ensure the start and end dates are in **Month in year/YYYY** format.
     - Align the **education details** with the keywords in the JD, if applicable.
     - Ensure that only the **most recent education** entry is included in the JSON output.
     -- Ensure each line in the JSON output has a maximum of **120 characters**including spaces
@@ -513,12 +504,61 @@ def generate_and_validate_section(content, job_description, section_name, api_ke
             return validated_output
         
     return f"Section {section_name} is not supported."
-def combined_validation(final_output,sections):
+def combined_validation(final_output, sections):
+ 
+    
+    # Define the validation prompt template
+    prompt = f""" 
+        Response: {final_output}
+        LaTeX Sections: {sections}
+
+        You are a strict validator and editor,Review and optimize the given resume, eliminate redundancies, avoid repeating experiences in projects or vice versa, ensure consistent tone and formatting, align content with the job description, and maintain clarity and professionalism
+        ---
+        #### General Validation Rules:
+        1. Remove placeholders (e.g., "xxx", "yyy") or null/empty fields.
+        2. Ensure all fields match the resume content. If there is a mismatch, correct it to align with the resume.
+        3. Format all text consistently (e.g., capitalization, punctuation, formatting).
+        4. Align data with the job description (JD), prioritizing relevance to the role.
+        5. Quantify outcomes, add measurable results where applicable, and use action-oriented language.
+
+        ---
+
+
+        ---
+        #### Output:
+        1. Return a corrected JSON object formatted exactly as the input but with validated and updated content.
+        2. Provide inline comments for any corrections or changes made.
+        3. Do not modify the JSON structure or field names.
+        """
+    
+    # Directly provide the API key
+    genai.configure(api_key="AIzaSyA108KteaxonmokJeSgjwmBSCr56k4qd5I")
+
+    # Specify the model type (you may need to refer to your specific API documentation for the exact type)
+     # Placeholder: Replace this with the actual model type if needed
+
+    # Instantiate the LLM model with the provided API key and model type
+    model_instance = genai.GenerativeModel("gemini-1.5-flash")
+
+    # Prepare the prompt
+    
+
+    # Generate the LaTeX response
+    
+    response = model_instance.generate_content(prompt)
+    return response.text if response else ""
+
+def latex_validation(final_output,sections):
     prompt = f"""
-    Generate a LaTeX formatted resume for the given resume based on given template, i only need latex code as output
+You are a strict validator and editor,Review and optimize enerate a LaTeX-formatted resume based on the provided content,Ensure all sections are formatted consistently and adhere to standard LaTeX practices without including any comments, explanations, or additional text outside the required LaTeX code. ensuring it adheres to the following requirements: 
+2. Ensure all sections (e.g., Contact Information, Education, Work Experience, Projects, Skills) are well-defined and formatted consistently.
+3. Maintain clean, readable formatting with proper indentation, alignment, and spacing.
+4. Include valid LaTeX commands that can be compiled without errors.
+5. Return the entire resume in a format ready for direct LaTeX compilation, adhering strictly to the specified template and structure don't add any 
+
     given resume:{final_output}
     given latex  tempplate:{sections}
-    in final latex response make sure  whereever %` by adding a backslash (`\`) before it 
+    
     """
 
     # Instantiate the model
@@ -530,6 +570,7 @@ def combined_validation(final_output,sections):
     # Safely extract the first candidate output
      # Adjust to the correct method
     return response.text if response else ""
+
 
 # Step 5: Flask route to process a specific section
 @app.route('/generate_resume', methods=['POST'])
@@ -585,8 +626,14 @@ def generate_resume_section():
 
     # Return the output in the response
     try:
-        final_resume = combined_validation(pre_output,sections)
-        print(f"Final LaTeX Resume:\n{final_resume}")
+        pre_final_resume = combined_validation(pre_output,sections)
+        print(f"Final LaTeX Resume:\n{pre_final_resume}")
+        
+    except Exception as e:
+        return jsonify({"error": f"Failed to combine sections: {str(e)}"}), 500
+    try:
+        final_resume = latex_validation(pre_final_resume,sections)
+        print(f"Final LaTeX Resume:{final_resume}")
         return jsonify({"final_resume": final_resume})
     except Exception as e:
         return jsonify({"error": f"Failed to combine sections: {str(e)}"}), 500
