@@ -17,7 +17,7 @@ os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 os.makedirs(app.config['OUTPUT_FOLDER'], exist_ok=True)
 
 # Hardcode your API key here
-API_KEY = "AIzaSyA108KteaxonmokJeSgjwmBSCr56k4qd5I"
+API_KEY = 
 
 # Step 1: Define prompts for each section
 personal_details_prompt = PromptTemplate(
